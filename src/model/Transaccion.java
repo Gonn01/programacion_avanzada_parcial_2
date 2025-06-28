@@ -3,19 +3,23 @@ package model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class Transaction {
+public class Transaccion {
     private int id;
     private int accountId;
-    private TransactionType type;
+    private TipoTransaccion type;
     private BigDecimal amount;
     private LocalDateTime timestamp;
     private Integer targetAccountId;
 
-    public Transaction() {
+    public Transaccion() {
     }
 
-    public Transaction(int id, int accountId, TransactionType type,
-            BigDecimal amount, LocalDateTime timestamp, Integer targetAccountId) {
+    public Transaccion(int id,
+            int accountId,
+            TipoTransaccion type,
+            BigDecimal amount,
+            LocalDateTime timestamp,
+            Integer targetAccountId) {
         this.id = id;
         this.accountId = accountId;
         this.type = type;
@@ -40,11 +44,11 @@ public class Transaction {
         this.accountId = accountId;
     }
 
-    public TransactionType getType() {
+    public TipoTransaccion getType() {
         return type;
     }
 
-    public void setType(TransactionType type) {
+    public void setType(TipoTransaccion type) {
         this.type = type;
     }
 

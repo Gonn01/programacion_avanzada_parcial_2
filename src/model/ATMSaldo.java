@@ -2,14 +2,14 @@ package model;
 
 import java.math.BigDecimal;
 
-public class CashInventory {
+public class ATMSaldo {
     private int id;
     private BigDecimal totalCash;
 
-    public CashInventory() {
+    public ATMSaldo() {
     }
 
-    public CashInventory(int id, BigDecimal totalCash) {
+    public ATMSaldo(int id, BigDecimal totalCash) {
         this.id = id;
         this.totalCash = totalCash;
     }
