@@ -3,18 +3,18 @@ package dao.impl;
 import dao.TransaccionDAO;
 import model.Transaccion;
 import model.TipoTransaccion;
-import util.DBConnection;
+import util.ConexionDB;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransactionDAOImpl implements TransaccionDAO {
+public class TransaccionDAOImpl implements TransaccionDAO {
     private final Connection conn;
 
-    public TransactionDAOImpl() throws SQLException {
-        this.conn = DBConnection.getInstance().getConnection();
+    public TransaccionDAOImpl() throws SQLException {
+        this.conn = ConexionDB.getInstancia().getConexion();
     }
 
     @Override
@@ -72,19 +72,19 @@ public class TransactionDAOImpl implements TransaccionDAO {
 
     /** Mapea una fila a un objeto Transaction */
     private Transaccion map(ResultSet rs) throws SQLException {
-        Transaccion tx = new Transaccion();
-        tx.setId(rs.getInt("id"));
-        tx.setAccountId(rs.getInt("account_id"));
-        tx.setType(TipoTransaccion.valueOf(rs.getString("type")));
-        tx.setAmount(rs.getBigDecimal("amount"));
+        Transaccion transaccion = new Transaccion();
+        transaccion.setId(rs.getInt("id"));
+        transaccion.setAccountId(rs.getInt("account_id"));
+        transaccion.setType(TipoTransaccion.valueOf(rs.getString("type")));
+        transaccion.setAmount(rs.getBigDecimal("amount"));
         Timestamp ts = rs.getTimestamp("timestamp");
         if (ts != null)
-            tx.setTimestamp(ts.toLocalDateTime());
+            transaccion.setTimestamp(ts.toLocalDateTime());
 
         int tgt = rs.getInt("target_account_id");
         if (!rs.wasNull())
-            tx.setTargetAccountId(tgt);
+            transaccion.setTargetAccountId(tgt);
 
-        return tx;
+        return transaccion;
     }
 }

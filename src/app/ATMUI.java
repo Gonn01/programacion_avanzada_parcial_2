@@ -162,7 +162,7 @@ public class ATMUI extends JFrame {
 
     private void doBalance() {
         try {
-            BigDecimal bal = service.getBalance(usuarioLogeado.getId());
+            BigDecimal bal = service.getSaldo(usuarioLogeado.getId());
             outputArea.setText("Saldo actual: " + bal);
         } catch (SQLException e) {
             outputArea.setText("Error: " + e.getMessage());
@@ -222,7 +222,7 @@ public class ATMUI extends JFrame {
             if (usuarioLogeado.getUserType() == TipoUsuario.EMPLEADO) {
                 txs = service.getAllTransactions();
             } else {
-                txs = service.getUserTransactions(usuarioLogeado.getId());
+                txs = service.getTransaccionesUsuario(usuarioLogeado.getId());
             }
 
             if (txs.isEmpty()) {

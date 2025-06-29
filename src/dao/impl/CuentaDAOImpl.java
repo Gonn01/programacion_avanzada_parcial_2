@@ -2,18 +2,16 @@ package dao.impl;
 
 import dao.CuentaDAO;
 import model.Cuenta;
-import util.DBConnection;
+import util.ConexionDB;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CuentaDAOImpl implements CuentaDAO {
     private final Connection conn;
 
     public CuentaDAOImpl() throws SQLException {
-        this.conn = DBConnection.getInstance().getConnection();
+        this.conn = ConexionDB.getInstancia().getConexion();
     }
 
     @Override
@@ -54,17 +52,6 @@ public class CuentaDAOImpl implements CuentaDAO {
     }
 
     @Override
-    public void create(Cuenta account) throws SQLException {
-        String sql = "INSERT INTO accounts(user_id, account_number, balance) VALUES(?,?,?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, account.getUserId());
-            ps.setString(2, account.getAccountNumber());
-            ps.setBigDecimal(3, account.getBalance());
-            ps.executeUpdate();
-        }
-    }
-
-    @Override
     public void updateBalance(int accountId, BigDecimal newBalance) throws SQLException {
         String sql = "UPDATE accounts SET balance = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -72,19 +59,6 @@ public class CuentaDAOImpl implements CuentaDAO {
             ps.setInt(2, accountId);
             ps.executeUpdate();
         }
-    }
-
-    @Override
-    public List<Cuenta> findAll() throws SQLException {
-        String sql = "SELECT * FROM accounts";
-        List<Cuenta> list = new ArrayList<>();
-        try (Statement st = conn.createStatement();
-                ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) {
-                list.add(map(rs));
-            }
-        }
-        return list;
     }
 
     private Cuenta map(ResultSet rs) throws SQLException {

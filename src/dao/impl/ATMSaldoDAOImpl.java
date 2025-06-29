@@ -2,14 +2,14 @@ package dao.impl;
 
 import dao.ATMSaldoDAO;
 import model.ATMSaldo;
-import util.DBConnection;
+import util.ConexionDB;
 import java.sql.*;
 
 public class ATMSaldoDAOImpl implements ATMSaldoDAO {
     private Connection conn;
 
     public ATMSaldoDAOImpl() throws SQLException {
-        conn = DBConnection.getInstance().getConnection();
+        conn = ConexionDB.getInstancia().getConexion();
     }
 
     @Override

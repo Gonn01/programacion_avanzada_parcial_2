@@ -42,7 +42,7 @@ public class Cuenta {
         this.accountNumber = accountNumber;
     }
 
-    public BigDecimal getBalance() {
+    public BigDecimal getSaldo() {
         return balance;
     }
 

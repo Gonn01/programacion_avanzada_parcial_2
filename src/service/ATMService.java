@@ -6,8 +6,8 @@ import dao.TransaccionDAO;
 import dao.UsuarioDAO;
 import dao.impl.CuentaDAOImpl;
 import dao.impl.ATMSaldoDAOImpl;
-import dao.impl.TransactionDAOImpl;
-import dao.impl.UserDAOImpl;
+import dao.impl.TransaccionDAOImpl;
+import dao.impl.UsuarioDAOImpl;
 import model.Cuenta;
 import model.ATMSaldo;
 import model.Transaccion;
@@ -22,59 +22,54 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ATMService {
-    private final UsuarioDAO userDAO;
-    private final CuentaDAO accountDAO;
-    private final TransaccionDAO txDAO;
-    private final ATMSaldoDAO cashDAO;
+    private final UsuarioDAO usuarioDAO;
+    private final CuentaDAO cuentaDAO;
+    private final TransaccionDAO transaccionDAO;
+    private final ATMSaldoDAO ATMSaldoDAO;
 
     public ATMService() throws SQLException {
-        this.userDAO = new UserDAOImpl();
-        this.accountDAO = new CuentaDAOImpl();
-        this.txDAO = new TransactionDAOImpl();
-        this.cashDAO = new ATMSaldoDAOImpl();
+        this.usuarioDAO = new UsuarioDAOImpl();
+        this.cuentaDAO = new CuentaDAOImpl();
+        this.transaccionDAO = new TransaccionDAOImpl();
+        this.ATMSaldoDAO = new ATMSaldoDAOImpl();
     }
 
-    /** Autentica y devuelve el User (empleado o cliente) o null si no encuentra */
     public User login(String username, String passwordHash) throws SQLException {
-        return userDAO.findByUsernameAndHash(username, passwordHash);
+        return usuarioDAO.findByUsernameAndPassword(username, passwordHash);
     }
 
-    /** Devuelve el saldo de la cuenta asociada a este usuario */
-    public BigDecimal getBalance(int userId) throws SQLException {
-        Cuenta acct = accountDAO.findByUserId(userId);
-        return acct.getBalance();
+    public BigDecimal getSaldo(int idUsuario) throws SQLException {
+        Cuenta cuenta = cuentaDAO.findByUserId(idUsuario);
+        return cuenta.getSaldo();
     }
 
-    /** Lista todas las transacciones de la cuenta de este usuario */
-    public List<Transaccion> getUserTransactions(int userId) throws SQLException {
-        Cuenta acct = accountDAO.findByUserId(userId);
-        return txDAO.findByAccountId(acct.getId());
+    public List<Transaccion> getTransaccionesUsuario(int userId) throws SQLException {
+        Cuenta acct = cuentaDAO.findByUserId(userId);
+        return transaccionDAO.findByAccountId(acct.getId());
     }
 
-    /** Lista todas las transacciones (solo empleado) */
     public List<Transaccion> getAllTransactions() throws SQLException {
-        return txDAO.findAll();
+        return transaccionDAO.findAll();
     }
 
     public Cuenta getAccountById(int accountId) throws SQLException {
-        return accountDAO.findById(accountId);
+        return cuentaDAO.findById(accountId);
     }
 
-    /** Hace un depósito: actualiza cuenta, registra TX y suma efectivo al cajero */
     public void deposit(int userId, BigDecimal amount) throws SQLException {
-        Cuenta acct = accountDAO.findByUserId(userId);
-        BigDecimal newBal = acct.getBalance().add(amount);
-        accountDAO.updateBalance(acct.getId(), newBal);
-        txDAO.add(new Transaccion(
+        Cuenta acct = cuentaDAO.findByUserId(userId);
+        BigDecimal newBal = acct.getSaldo().add(amount);
+        cuentaDAO.updateBalance(acct.getId(), newBal);
+        transaccionDAO.add(new Transaccion(
                 0,
                 acct.getId(),
                 TipoTransaccion.DEPOSITO,
                 amount,
                 LocalDateTime.now(),
                 null));
-        ATMSaldo inv = cashDAO.getSaldo();
+        ATMSaldo inv = ATMSaldoDAO.getSaldo();
         inv.setTotalCash(inv.getTotalCash().add(amount));
-        cashDAO.actualizarSaldo(inv);
+        ATMSaldoDAO.actualizarSaldo(inv);
     }
 
     /**
@@ -82,17 +77,17 @@ public class ATMService {
      * efectivo
      */
     public void withdraw(int userId, BigDecimal amount) throws SQLException {
-        Cuenta acct = accountDAO.findByUserId(userId);
-        if (acct.getBalance().compareTo(amount) < 0) {
+        Cuenta acct = cuentaDAO.findByUserId(userId);
+        if (acct.getSaldo().compareTo(amount) < 0) {
             throw new IllegalArgumentException("Saldo insuficiente");
         }
-        ATMSaldo inv = cashDAO.getSaldo();
+        ATMSaldo inv = ATMSaldoDAO.getSaldo();
         if (inv.getTotalCash().compareTo(amount) < 0) {
             throw new IllegalArgumentException("Cajero sin efectivo suficiente");
         }
-        BigDecimal newBal = acct.getBalance().subtract(amount);
-        accountDAO.updateBalance(acct.getId(), newBal);
-        txDAO.add(new Transaccion(
+        BigDecimal newBal = acct.getSaldo().subtract(amount);
+        cuentaDAO.updateBalance(acct.getId(), newBal);
+        transaccionDAO.add(new Transaccion(
                 0,
                 acct.getId(),
                 TipoTransaccion.RETIRO,
@@ -100,7 +95,7 @@ public class ATMService {
                 LocalDateTime.now(),
                 null));
         inv.setTotalCash(inv.getTotalCash().subtract(amount));
-        cashDAO.actualizarSaldo(inv);
+        ATMSaldoDAO.actualizarSaldo(inv);
     }
 
     /**
@@ -108,19 +103,19 @@ public class ATMService {
      * actualiza ambos saldos y registra la TX con target_account_id.
      */
     public void transfer(int userId, String toAccountNumber, BigDecimal amount) throws SQLException {
-        Cuenta from = accountDAO.findByUserId(userId);
-        if (from.getBalance().compareTo(amount) < 0) {
+        Cuenta from = cuentaDAO.findByUserId(userId);
+        if (from.getSaldo().compareTo(amount) < 0) {
             throw new IllegalArgumentException("Saldo insuficiente");
         }
-        Cuenta to = accountDAO.findByAccountNumber(toAccountNumber);
+        Cuenta to = cuentaDAO.findByAccountNumber(toAccountNumber);
         if (to == null) {
             throw new IllegalArgumentException("Cuenta destino no encontrada");
         }
         // Actualizar saldos
-        accountDAO.updateBalance(from.getId(), from.getBalance().subtract(amount));
-        accountDAO.updateBalance(to.getId(), to.getBalance().add(amount));
+        cuentaDAO.updateBalance(from.getId(), from.getSaldo().subtract(amount));
+        cuentaDAO.updateBalance(to.getId(), to.getSaldo().add(amount));
         // Registrar transacción
-        txDAO.add(new Transaccion(
+        transaccionDAO.add(new Transaccion(
                 0,
                 from.getId(),
                 TipoTransaccion.TRANSFERENCIA,
@@ -131,9 +126,9 @@ public class ATMService {
 
     /** Reponer efectivo al cajero (solo empleado) */
     public void refillCash(BigDecimal amount) throws SQLException {
-        ATMSaldo inv = cashDAO.getSaldo();
+        ATMSaldo inv = ATMSaldoDAO.getSaldo();
         inv.setTotalCash(inv.getTotalCash().add(amount));
-        cashDAO.actualizarSaldo(inv);
+        ATMSaldoDAO.actualizarSaldo(inv);
     }
 
     /**
@@ -141,7 +136,7 @@ public class ATMService {
      * devuelve un mapa {DEPOSIT→#count, WITHDRAWAL→#count, TRANSFER→#count}
      */
     public Map<TipoTransaccion, Long> dailyStats() throws SQLException {
-        List<Transaccion> all = txDAO.findAll();
+        List<Transaccion> all = transaccionDAO.findAll();
         return all.stream()
                 .collect(Collectors.groupingBy(
                         Transaccion::getType,
