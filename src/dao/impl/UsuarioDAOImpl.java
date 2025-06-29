@@ -28,14 +28,14 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         }
     }
 
-    private User map(ResultSet rs) throws SQLException {
-        int id = rs.getInt("id");
+    private User map(ResultSet data) throws SQLException {
+        int id = data.getInt("id");
 
-        String username = rs.getString("username");
+        String username = data.getString("username");
 
-        String passwordHash = rs.getString("password_hash");
+        String passwordHash = data.getString("password_hash");
 
-        TipoUsuario tipoUsuario = TipoUsuario.valueOf(rs.getString("user_type"));
+        TipoUsuario tipoUsuario = TipoUsuario.valueOf(data.getString("user_type"));
 
         return new User(id, username, passwordHash, tipoUsuario);
     }

@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransaccionDAOImpl implements TransaccionDAO {
-    private final Connection conn;
+    private final Connection conexion;
 
     public TransaccionDAOImpl() throws SQLException {
-        this.conn = ConexionDB.getInstancia().getConexion();
+        this.conexion = ConexionDB.getInstancia().getConexion();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class TransaccionDAOImpl implements TransaccionDAO {
                 VALUES (?, ?, ?, ?, ?)
                 """;
 
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, transaccion.getNumeroCuenta());
             ps.setString(2, transaccion.getTipo().name());
             ps.setBigDecimal(3, transaccion.getCantidad());
@@ -47,7 +47,7 @@ public class TransaccionDAOImpl implements TransaccionDAO {
     public List<Transaccion> findByAccountId(int accountId) throws SQLException {
         String sql = "SELECT * FROM transactions WHERE account_id = ?";
         List<Transaccion> list = new ArrayList<>();
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, accountId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -62,7 +62,7 @@ public class TransaccionDAOImpl implements TransaccionDAO {
     public List<Transaccion> findAll() throws SQLException {
         String sql = "SELECT * FROM transactions";
         List<Transaccion> list = new ArrayList<>();
-        try (Statement st = conn.createStatement();
+        try (Statement st = conexion.createStatement();
                 ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 list.add(map(rs));

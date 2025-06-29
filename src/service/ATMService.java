@@ -1,15 +1,15 @@
 package service;
 
 import dao.CuentaDAO;
-import dao.ATMSaldoDAO;
+import dao.ATMDAO;
 import dao.TransaccionDAO;
 import dao.UsuarioDAO;
 import dao.impl.CuentaDAOImpl;
-import dao.impl.ATMSaldoDAOImpl;
+import dao.impl.ATMDAOImpl;
 import dao.impl.TransaccionDAOImpl;
 import dao.impl.UsuarioDAOImpl;
 import model.Cuenta;
-import model.ATMSaldo;
+import model.ATM;
 import model.Transaccion;
 import model.TipoTransaccion;
 import model.User;
@@ -23,13 +23,13 @@ public class ATMService {
     private final UsuarioDAO usuarioDAO;
     private final CuentaDAO cuentaDAO;
     private final TransaccionDAO transaccionDAO;
-    private final ATMSaldoDAO ATMSaldoDAO;
+    private final ATMDAO ATMDAO;
 
     public ATMService() throws SQLException {
         this.usuarioDAO = new UsuarioDAOImpl();
         this.cuentaDAO = new CuentaDAOImpl();
         this.transaccionDAO = new TransaccionDAOImpl();
-        this.ATMSaldoDAO = new ATMSaldoDAOImpl();
+        this.ATMDAO = new ATMDAOImpl();
     }
 
     public User login(String username, String passwordHash) throws SQLException {
@@ -69,11 +69,11 @@ public class ATMService {
                 LocalDateTime.now(),
                 null));
 
-        ATMSaldo atmSaldo = ATMSaldoDAO.getSaldo();
+        ATM atm = ATMDAO.getSaldo();
 
-        atmSaldo.setSaldo(atmSaldo.getSaldo().add(monto));
+        atm.setSaldo(atm.getSaldo().add(monto));
 
-        ATMSaldoDAO.actualizarSaldo(atmSaldo);
+        ATMDAO.actualizarSaldo(atm);
     }
 
     public void retiro(int idUsuario, BigDecimal monto) throws SQLException {
@@ -91,7 +91,7 @@ public class ATMService {
                 null);
         transaccionDAO.registrar(nuevaTransaccion);
 
-        ATMSaldo inv = ATMSaldoDAO.getSaldo();
+        ATM inv = ATMDAO.getSaldo();
         if (inv.getSaldo().compareTo(monto) < 0) {
             throw new IllegalArgumentException("Cajero sin efectivo suficiente");
         }
@@ -102,7 +102,7 @@ public class ATMService {
 
         inv.setSaldo(inv.getSaldo().subtract(monto));
 
-        ATMSaldoDAO.actualizarSaldo(inv);
+        ATMDAO.actualizarSaldo(inv);
     }
 
     public void transfer(int idUsuario, String numeroCuentaDestinatario, BigDecimal monto) throws SQLException {
@@ -133,10 +133,10 @@ public class ATMService {
     }
 
     public void agregarSaldo(BigDecimal amount) throws SQLException {
-        ATMSaldo atmSaldo = ATMSaldoDAO.getSaldo();
+        ATM atm = ATMDAO.getSaldo();
 
-        atmSaldo.setSaldo(atmSaldo.getSaldo().add(amount));
+        atm.setSaldo(atm.getSaldo().add(amount));
 
-        ATMSaldoDAO.actualizarSaldo(atmSaldo);
+        ATMDAO.actualizarSaldo(atm);
     }
 }

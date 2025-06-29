@@ -8,16 +8,17 @@ import java.math.BigDecimal;
 import java.sql.*;
 
 public class CuentaDAOImpl implements CuentaDAO {
-    private final Connection conn;
+    private final Connection conexion;
 
     public CuentaDAOImpl() throws SQLException {
-        this.conn = ConexionDB.getInstancia().getConexion();
+        this.conexion = ConexionDB.getInstancia().getConexion();
     }
 
     @Override
     public Cuenta findByUserId(int userId) throws SQLException {
         String sql = "SELECT * FROM accounts WHERE user_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next())
@@ -30,7 +31,8 @@ public class CuentaDAOImpl implements CuentaDAO {
     @Override
     public Cuenta findByAccountNumber(String accountNumber) throws SQLException {
         String sql = "SELECT * FROM accounts WHERE account_number = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setString(1, accountNumber);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next())
@@ -43,7 +45,8 @@ public class CuentaDAOImpl implements CuentaDAO {
     @Override
     public Cuenta findById(int id) throws SQLException {
         String sql = "SELECT * FROM accounts WHERE id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? map(rs) : null;
@@ -54,7 +57,8 @@ public class CuentaDAOImpl implements CuentaDAO {
     @Override
     public void actualizarSaldo(int cuentaId, BigDecimal nuevoSaldo) throws SQLException {
         String sql = "UPDATE accounts SET balance = ? WHERE id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setBigDecimal(1, nuevoSaldo);
             ps.setInt(2, cuentaId);
             ps.executeUpdate();

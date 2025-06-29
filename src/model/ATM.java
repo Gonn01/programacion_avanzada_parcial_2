@@ -2,11 +2,11 @@ package model;
 
 import java.math.BigDecimal;
 
-public class ATMSaldo {
+public class ATM {
     private int id;
     private BigDecimal saldo;
 
-    public ATMSaldo(int id, BigDecimal totalCash) {
+    public ATM(int id, BigDecimal totalCash) {
         this.id = id;
         this.saldo = totalCash;
     }
