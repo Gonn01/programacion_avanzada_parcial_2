@@ -5,6 +5,7 @@ import model.Transaccion;
 import model.TipoTransaccion;
 import util.ConexionDB;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,16 +26,16 @@ public class TransaccionDAOImpl implements TransaccionDAO {
                 VALUES (?, ?, ?, ?, ?)
                 """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, tx.getAccountId());
-            ps.setString(2, tx.getType().name());
-            ps.setBigDecimal(3, tx.getAmount());
+            ps.setInt(1, tx.getNumeroCuenta());
+            ps.setString(2, tx.getTipo().name());
+            ps.setBigDecimal(3, tx.getCantidad());
             // timestamp lo pasamos explícito (o null para NOW())
             ps.setTimestamp(4, Timestamp.valueOf(
-                    tx.getTimestamp() != null
-                            ? tx.getTimestamp()
+                    tx.getFecha() != null
+                            ? tx.getFecha()
                             : LocalDateTime.now()));
-            if (tx.getTargetAccountId() != null) {
-                ps.setInt(5, tx.getTargetAccountId());
+            if (tx.getCuentaDestinatario() != null) {
+                ps.setInt(5, tx.getCuentaDestinatario());
             } else {
                 ps.setNull(5, Types.INTEGER);
             }
@@ -71,20 +72,22 @@ public class TransaccionDAOImpl implements TransaccionDAO {
     }
 
     /** Mapea una fila a un objeto Transaction */
-    private Transaccion map(ResultSet rs) throws SQLException {
-        Transaccion transaccion = new Transaccion();
-        transaccion.setId(rs.getInt("id"));
-        transaccion.setAccountId(rs.getInt("account_id"));
-        transaccion.setType(TipoTransaccion.valueOf(rs.getString("type")));
-        transaccion.setAmount(rs.getBigDecimal("amount"));
-        Timestamp ts = rs.getTimestamp("timestamp");
-        if (ts != null)
-            transaccion.setTimestamp(ts.toLocalDateTime());
+    private Transaccion map(ResultSet data) throws SQLException {
+        int id = data.getInt("id");
 
-        int tgt = rs.getInt("target_account_id");
-        if (!rs.wasNull())
-            transaccion.setTargetAccountId(tgt);
+        int accountId = data.getInt("account_id");
+
+        TipoTransaccion tipo = TipoTransaccion.valueOf(data.getString("type"));
+
+        BigDecimal cantidad = data.getBigDecimal("amount");
+
+        LocalDateTime fecha = data.getTimestamp("timestamp").toLocalDateTime();
+
+        Integer cuentaDestinatario = data.getObject("target_account_id", Integer.class);
+
+        Transaccion transaccion = new Transaccion(id, accountId, tipo, cantidad, fecha, cuentaDestinatario);
 
         return transaccion;
     }
+
 }

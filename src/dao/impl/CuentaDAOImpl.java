@@ -61,12 +61,14 @@ public class CuentaDAOImpl implements CuentaDAO {
         }
     }
 
-    private Cuenta map(ResultSet rs) throws SQLException {
-        Cuenta a = new Cuenta();
-        a.setId(rs.getInt("id"));
-        a.setUserId(rs.getInt("user_id"));
-        a.setAccountNumber(rs.getString("account_number"));
-        a.setBalance(rs.getBigDecimal("balance"));
-        return a;
+    private Cuenta map(ResultSet data) throws SQLException {
+        final int id = data.getInt("id");
+        final int usuarioId = data.getInt("user_id");
+        final String numero = data.getString("account_number");
+        final BigDecimal saldo = data.getBigDecimal("balance");
+
+        Cuenta cuenta = new Cuenta(id, usuarioId, numero, saldo);
+
+        return cuenta;
     }
 }

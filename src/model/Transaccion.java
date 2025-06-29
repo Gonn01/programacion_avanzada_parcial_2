@@ -5,27 +5,25 @@ import java.time.LocalDateTime;
 
 public class Transaccion {
     private int id;
-    private int accountId;
-    private TipoTransaccion type;
-    private BigDecimal amount;
-    private LocalDateTime timestamp;
-    private Integer targetAccountId;
+    private int numeroCuenta;
+    private TipoTransaccion tipo;
+    private BigDecimal cantidad;
+    private LocalDateTime fecha;
+    private Integer cuentaDestinatario;
 
-    public Transaccion() {
-    }
-
-    public Transaccion(int id,
-            int accountId,
-            TipoTransaccion type,
-            BigDecimal amount,
-            LocalDateTime timestamp,
-            Integer targetAccountId) {
+    public Transaccion(
+            int id,
+            int numeroCuenta,
+            TipoTransaccion tipo,
+            BigDecimal cantidad,
+            LocalDateTime fecha,
+            Integer cuentaDestinatario) {
         this.id = id;
-        this.accountId = accountId;
-        this.type = type;
-        this.amount = amount;
-        this.timestamp = timestamp;
-        this.targetAccountId = targetAccountId;
+        this.numeroCuenta = numeroCuenta;
+        this.tipo = tipo;
+        this.cantidad = cantidad;
+        this.fecha = fecha;
+        this.cuentaDestinatario = cuentaDestinatario;
     }
 
     public int getId() {
@@ -36,43 +34,43 @@ public class Transaccion {
         this.id = id;
     }
 
-    public int getAccountId() {
-        return accountId;
+    public int getNumeroCuenta() {
+        return numeroCuenta;
     }
 
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
+    public void setNumeroCuenta(int accountId) {
+        this.numeroCuenta = accountId;
     }
 
-    public TipoTransaccion getType() {
-        return type;
+    public TipoTransaccion getTipo() {
+        return tipo;
     }
 
-    public void setType(TipoTransaccion type) {
-        this.type = type;
+    public void setTipo(TipoTransaccion type) {
+        this.tipo = type;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getCantidad() {
+        return cantidad;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setCantidad(BigDecimal amount) {
+        this.cantidad = amount;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public LocalDateTime getFecha() {
+        return fecha;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setFecha(LocalDateTime timestamp) {
+        this.fecha = timestamp;
     }
 
-    public Integer getTargetAccountId() {
-        return targetAccountId;
+    public Integer getCuentaDestinatario() {
+        return cuentaDestinatario;
     }
 
-    public void setTargetAccountId(Integer targetAccountId) {
-        this.targetAccountId = targetAccountId;
+    public void setCuentaDestinatario(Integer targetAccountId) {
+        this.cuentaDestinatario = targetAccountId;
     }
 }

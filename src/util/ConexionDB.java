@@ -26,6 +26,7 @@ public class ConexionDB {
         if (instancia == null || instancia.getConexion().isClosed()) {
             instancia = new ConexionDB();
         }
+
         return instancia;
     }
 

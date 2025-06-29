@@ -27,7 +27,7 @@ public class ATMSaldoDAOImpl implements ATMSaldoDAO {
     public void actualizarSaldo(ATMSaldo inventory) throws SQLException {
         String sql = "UPDATE atm_cash SET total_cash=? WHERE id=1";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setBigDecimal(1, inventory.getTotalCash());
+            ps.setBigDecimal(1, inventory.getSaldo());
             ps.executeUpdate();
         }
     }

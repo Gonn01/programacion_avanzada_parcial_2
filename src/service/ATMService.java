@@ -68,7 +68,7 @@ public class ATMService {
                 LocalDateTime.now(),
                 null));
         ATMSaldo inv = ATMSaldoDAO.getSaldo();
-        inv.setTotalCash(inv.getTotalCash().add(amount));
+        inv.setSaldo(inv.getSaldo().add(amount));
         ATMSaldoDAO.actualizarSaldo(inv);
     }
 
@@ -82,7 +82,7 @@ public class ATMService {
             throw new IllegalArgumentException("Saldo insuficiente");
         }
         ATMSaldo inv = ATMSaldoDAO.getSaldo();
-        if (inv.getTotalCash().compareTo(amount) < 0) {
+        if (inv.getSaldo().compareTo(amount) < 0) {
             throw new IllegalArgumentException("Cajero sin efectivo suficiente");
         }
         BigDecimal newBal = acct.getSaldo().subtract(amount);
@@ -94,7 +94,7 @@ public class ATMService {
                 amount,
                 LocalDateTime.now(),
                 null));
-        inv.setTotalCash(inv.getTotalCash().subtract(amount));
+        inv.setSaldo(inv.getSaldo().subtract(amount));
         ATMSaldoDAO.actualizarSaldo(inv);
     }
 
@@ -127,7 +127,7 @@ public class ATMService {
     /** Reponer efectivo al cajero (solo empleado) */
     public void refillCash(BigDecimal amount) throws SQLException {
         ATMSaldo inv = ATMSaldoDAO.getSaldo();
-        inv.setTotalCash(inv.getTotalCash().add(amount));
+        inv.setSaldo(inv.getSaldo().add(amount));
         ATMSaldoDAO.actualizarSaldo(inv);
     }
 
@@ -139,7 +139,7 @@ public class ATMService {
         List<Transaccion> all = transaccionDAO.findAll();
         return all.stream()
                 .collect(Collectors.groupingBy(
-                        Transaccion::getType,
+                        Transaccion::getTipo,
                         Collectors.counting()));
     }
 }

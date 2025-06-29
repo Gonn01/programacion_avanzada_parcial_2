@@ -232,18 +232,18 @@ public class ATMUI extends JFrame {
 
             StringBuilder sb = new StringBuilder();
             for (Transaccion t : txs) {
-                sb.append(t.getTimestamp())
+                sb.append(t.getFecha())
                         .append(" | ")
-                        .append(t.getType())
+                        .append(t.getTipo())
                         .append(" | ")
-                        .append(t.getAmount());
-                if (t.getType() == TipoTransaccion.TRANSFERENCIA && t.getTargetAccountId() != null) {
+                        .append(t.getCantidad());
+                if (t.getTipo() == TipoTransaccion.TRANSFERENCIA && t.getCuentaDestinatario() != null) {
                     // Resolvemos el número de cuenta destino:
                     try {
-                        Cuenta toAcct = service.getAccountById(t.getTargetAccountId());
-                        sb.append(" → ").append(toAcct.getAccountNumber());
+                        Cuenta toAcct = service.getAccountById(t.getCuentaDestinatario());
+                        sb.append(" → ").append(toAcct.getNumero());
                     } catch (SQLException e) {
-                        sb.append(" → [Cuenta #" + t.getTargetAccountId() + "]");
+                        sb.append(" → [Cuenta #" + t.getCuentaDestinatario() + "]");
                     }
                 }
                 sb.append("\n");

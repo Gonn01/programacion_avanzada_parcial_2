@@ -4,14 +4,11 @@ import java.math.BigDecimal;
 
 public class ATMSaldo {
     private int id;
-    private BigDecimal totalCash;
-
-    public ATMSaldo() {
-    }
+    private BigDecimal saldo;
 
     public ATMSaldo(int id, BigDecimal totalCash) {
         this.id = id;
-        this.totalCash = totalCash;
+        this.saldo = totalCash;
     }
 
     public int getId() {
@@ -22,11 +19,11 @@ public class ATMSaldo {
         this.id = id;
     }
 
-    public BigDecimal getTotalCash() {
-        return totalCash;
+    public BigDecimal getSaldo() {
+        return saldo;
     }
 
-    public void setTotalCash(BigDecimal totalCash) {
-        this.totalCash = totalCash;
+    public void setSaldo(BigDecimal totalCash) {
+        this.saldo = totalCash;
     }
 }
