@@ -18,8 +18,6 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ATMService {
     private final UsuarioDAO usuarioDAO;
@@ -43,103 +41,102 @@ public class ATMService {
         return cuenta.getSaldo();
     }
 
-    public List<Transaccion> getTransaccionesUsuario(int userId) throws SQLException {
-        Cuenta acct = cuentaDAO.findByUserId(userId);
-        return transaccionDAO.findByAccountId(acct.getId());
+    public List<Transaccion> getTransaccionesUsuario(int idUsuario) throws SQLException {
+        Cuenta cuenta = cuentaDAO.findByUserId(idUsuario);
+        return transaccionDAO.findByAccountId(cuenta.getId());
     }
 
-    public List<Transaccion> getAllTransactions() throws SQLException {
+    public List<Transaccion> getAllTransacciones() throws SQLException {
         return transaccionDAO.findAll();
     }
 
-    public Cuenta getAccountById(int accountId) throws SQLException {
+    public Cuenta getCuentaById(int accountId) throws SQLException {
         return cuentaDAO.findById(accountId);
     }
 
-    public void deposit(int userId, BigDecimal amount) throws SQLException {
-        Cuenta acct = cuentaDAO.findByUserId(userId);
-        BigDecimal newBal = acct.getSaldo().add(amount);
-        cuentaDAO.updateBalance(acct.getId(), newBal);
-        transaccionDAO.add(new Transaccion(
+    public void depositar(int idUsuario, BigDecimal monto) throws SQLException {
+        Cuenta cuenta = cuentaDAO.findByUserId(idUsuario);
+
+        BigDecimal nuevoSaldo = cuenta.getSaldo().add(monto);
+
+        cuentaDAO.actualizarSaldo(cuenta.getId(), nuevoSaldo);
+
+        transaccionDAO.registrar(new Transaccion(
                 0,
-                acct.getId(),
+                cuenta.getId(),
                 TipoTransaccion.DEPOSITO,
-                amount,
+                monto,
                 LocalDateTime.now(),
                 null));
-        ATMSaldo inv = ATMSaldoDAO.getSaldo();
-        inv.setSaldo(inv.getSaldo().add(amount));
-        ATMSaldoDAO.actualizarSaldo(inv);
+
+        ATMSaldo atmSaldo = ATMSaldoDAO.getSaldo();
+
+        atmSaldo.setSaldo(atmSaldo.getSaldo().add(monto));
+
+        ATMSaldoDAO.actualizarSaldo(atmSaldo);
     }
 
-    /**
-     * Hace un retiro: valida fondos de cuenta y del cajero, registra TX y descuenta
-     * efectivo
-     */
-    public void withdraw(int userId, BigDecimal amount) throws SQLException {
-        Cuenta acct = cuentaDAO.findByUserId(userId);
-        if (acct.getSaldo().compareTo(amount) < 0) {
+    public void retiro(int idUsuario, BigDecimal monto) throws SQLException {
+        Cuenta cuenta = cuentaDAO.findByUserId(idUsuario);
+        if (cuenta.getSaldo().compareTo(monto) < 0) {
             throw new IllegalArgumentException("Saldo insuficiente");
         }
+
+        final Transaccion nuevaTransaccion = new Transaccion(
+                0,
+                cuenta.getId(),
+                TipoTransaccion.RETIRO,
+                monto,
+                LocalDateTime.now(),
+                null);
+        transaccionDAO.registrar(nuevaTransaccion);
+
         ATMSaldo inv = ATMSaldoDAO.getSaldo();
-        if (inv.getSaldo().compareTo(amount) < 0) {
+        if (inv.getSaldo().compareTo(monto) < 0) {
             throw new IllegalArgumentException("Cajero sin efectivo suficiente");
         }
-        BigDecimal newBal = acct.getSaldo().subtract(amount);
-        cuentaDAO.updateBalance(acct.getId(), newBal);
-        transaccionDAO.add(new Transaccion(
-                0,
-                acct.getId(),
-                TipoTransaccion.RETIRO,
-                amount,
-                LocalDateTime.now(),
-                null));
-        inv.setSaldo(inv.getSaldo().subtract(amount));
+
+        BigDecimal nuevoSaldo = cuenta.getSaldo().subtract(monto);
+
+        cuentaDAO.actualizarSaldo(cuenta.getId(), nuevoSaldo);
+
+        inv.setSaldo(inv.getSaldo().subtract(monto));
+
         ATMSaldoDAO.actualizarSaldo(inv);
     }
 
-    /**
-     * Transfiere de la cuenta del usuario a otra cuenta (por número):
-     * actualiza ambos saldos y registra la TX con target_account_id.
-     */
-    public void transfer(int userId, String toAccountNumber, BigDecimal amount) throws SQLException {
-        Cuenta from = cuentaDAO.findByUserId(userId);
-        if (from.getSaldo().compareTo(amount) < 0) {
+    public void transfer(int idUsuario, String numeroCuentaDestinatario, BigDecimal monto) throws SQLException {
+        Cuenta cuentaRemitente = cuentaDAO.findByUserId(idUsuario);
+
+        if (cuentaRemitente.getSaldo().compareTo(monto) < 0) {
             throw new IllegalArgumentException("Saldo insuficiente");
         }
-        Cuenta to = cuentaDAO.findByAccountNumber(toAccountNumber);
-        if (to == null) {
+
+        Cuenta cuentaDestinatario = cuentaDAO.findByAccountNumber(numeroCuentaDestinatario);
+        if (cuentaDestinatario == null) {
             throw new IllegalArgumentException("Cuenta destino no encontrada");
         }
-        // Actualizar saldos
-        cuentaDAO.updateBalance(from.getId(), from.getSaldo().subtract(amount));
-        cuentaDAO.updateBalance(to.getId(), to.getSaldo().add(amount));
-        // Registrar transacción
-        transaccionDAO.add(new Transaccion(
+
+        cuentaDAO.actualizarSaldo(cuentaRemitente.getId(), cuentaRemitente.getSaldo().subtract(monto));
+
+        cuentaDAO.actualizarSaldo(cuentaDestinatario.getId(), cuentaDestinatario.getSaldo().add(monto));
+
+        final Transaccion transaccion = new Transaccion(
                 0,
-                from.getId(),
+                cuentaRemitente.getId(),
                 TipoTransaccion.TRANSFERENCIA,
-                amount,
+                monto,
                 LocalDateTime.now(),
-                to.getId()));
+                cuentaDestinatario.getId());
+
+        transaccionDAO.registrar(transaccion);
     }
 
-    /** Reponer efectivo al cajero (solo empleado) */
-    public void refillCash(BigDecimal amount) throws SQLException {
-        ATMSaldo inv = ATMSaldoDAO.getSaldo();
-        inv.setSaldo(inv.getSaldo().add(amount));
-        ATMSaldoDAO.actualizarSaldo(inv);
-    }
+    public void agregarSaldo(BigDecimal amount) throws SQLException {
+        ATMSaldo atmSaldo = ATMSaldoDAO.getSaldo();
 
-    /**
-     * Estadísticas diarias por tipo de transacción (empleado):
-     * devuelve un mapa {DEPOSIT→#count, WITHDRAWAL→#count, TRANSFER→#count}
-     */
-    public Map<TipoTransaccion, Long> dailyStats() throws SQLException {
-        List<Transaccion> all = transaccionDAO.findAll();
-        return all.stream()
-                .collect(Collectors.groupingBy(
-                        Transaccion::getTipo,
-                        Collectors.counting()));
+        atmSaldo.setSaldo(atmSaldo.getSaldo().add(amount));
+
+        ATMSaldoDAO.actualizarSaldo(atmSaldo);
     }
 }

@@ -52,19 +52,22 @@ public class CuentaDAOImpl implements CuentaDAO {
     }
 
     @Override
-    public void updateBalance(int accountId, BigDecimal newBalance) throws SQLException {
+    public void actualizarSaldo(int cuentaId, BigDecimal nuevoSaldo) throws SQLException {
         String sql = "UPDATE accounts SET balance = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setBigDecimal(1, newBalance);
-            ps.setInt(2, accountId);
+            ps.setBigDecimal(1, nuevoSaldo);
+            ps.setInt(2, cuentaId);
             ps.executeUpdate();
         }
     }
 
     private Cuenta map(ResultSet data) throws SQLException {
         final int id = data.getInt("id");
+
         final int usuarioId = data.getInt("user_id");
+
         final String numero = data.getString("account_number");
+
         final BigDecimal saldo = data.getBigDecimal("balance");
 
         Cuenta cuenta = new Cuenta(id, usuarioId, numero, saldo);

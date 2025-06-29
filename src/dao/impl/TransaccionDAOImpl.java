@@ -19,23 +19,23 @@ public class TransaccionDAOImpl implements TransaccionDAO {
     }
 
     @Override
-    public void add(Transaccion tx) throws SQLException {
+    public void registrar(Transaccion transaccion) throws SQLException {
         String sql = """
                 INSERT INTO transactions
                   (account_id, type, amount, timestamp, target_account_id)
                 VALUES (?, ?, ?, ?, ?)
                 """;
+
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, tx.getNumeroCuenta());
-            ps.setString(2, tx.getTipo().name());
-            ps.setBigDecimal(3, tx.getCantidad());
-            // timestamp lo pasamos explícito (o null para NOW())
+            ps.setInt(1, transaccion.getNumeroCuenta());
+            ps.setString(2, transaccion.getTipo().name());
+            ps.setBigDecimal(3, transaccion.getCantidad());
             ps.setTimestamp(4, Timestamp.valueOf(
-                    tx.getFecha() != null
-                            ? tx.getFecha()
+                    transaccion.getFecha() != null
+                            ? transaccion.getFecha()
                             : LocalDateTime.now()));
-            if (tx.getCuentaDestinatario() != null) {
-                ps.setInt(5, tx.getCuentaDestinatario());
+            if (transaccion.getCuentaDestinatario() != null) {
+                ps.setInt(5, transaccion.getCuentaDestinatario());
             } else {
                 ps.setNull(5, Types.INTEGER);
             }
@@ -71,7 +71,6 @@ public class TransaccionDAOImpl implements TransaccionDAO {
         return list;
     }
 
-    /** Mapea una fila a un objeto Transaction */
     private Transaccion map(ResultSet data) throws SQLException {
         int id = data.getInt("id");
 

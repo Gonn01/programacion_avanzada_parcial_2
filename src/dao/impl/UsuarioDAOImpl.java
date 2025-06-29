@@ -10,7 +10,6 @@ import java.sql.*;
 public class UsuarioDAOImpl implements UsuarioDAO {
     private final Connection conn;
 
-    // Constructor explícito que maneja el SQLException
     public UsuarioDAOImpl() throws SQLException {
         this.conn = ConexionDB.getInstancia().getConexion();
     }

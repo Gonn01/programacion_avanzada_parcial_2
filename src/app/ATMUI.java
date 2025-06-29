@@ -131,7 +131,7 @@ public class ATMUI extends JFrame {
                 errorLabel.setText("Credenciales inválidas");
             } else {
                 errorLabel.setText("");
-                setupDashboardFor(usuarioLogeado.getUserType());
+                setupDashboardFor(usuarioLogeado.getTipoUsuario());
                 cardLayout.show(mainPanel, "dashboard");
             }
         } catch (SQLException ex) {
@@ -174,7 +174,7 @@ public class ATMUI extends JFrame {
         if (s != null) {
             try {
                 BigDecimal amt = new BigDecimal(s);
-                service.deposit(usuarioLogeado.getId(), amt);
+                service.depositar(usuarioLogeado.getId(), amt);
                 outputArea.setText("Depositado: " + amt);
             } catch (Exception ex) {
                 outputArea.setText("Error: " + ex.getMessage());
@@ -187,7 +187,7 @@ public class ATMUI extends JFrame {
         if (s != null) {
             try {
                 BigDecimal amt = new BigDecimal(s);
-                service.withdraw(usuarioLogeado.getId(), amt);
+                service.retiro(usuarioLogeado.getId(), amt);
                 outputArea.setText("Retirado: " + amt);
             } catch (Exception ex) {
                 outputArea.setText("Error: " + ex.getMessage());
@@ -219,8 +219,8 @@ public class ATMUI extends JFrame {
     private void doViewTransactions() {
         try {
             List<Transaccion> txs;
-            if (usuarioLogeado.getUserType() == TipoUsuario.EMPLEADO) {
-                txs = service.getAllTransactions();
+            if (usuarioLogeado.getTipoUsuario() == TipoUsuario.EMPLEADO) {
+                txs = service.getAllTransacciones();
             } else {
                 txs = service.getTransaccionesUsuario(usuarioLogeado.getId());
             }
@@ -238,9 +238,8 @@ public class ATMUI extends JFrame {
                         .append(" | ")
                         .append(t.getCantidad());
                 if (t.getTipo() == TipoTransaccion.TRANSFERENCIA && t.getCuentaDestinatario() != null) {
-                    // Resolvemos el número de cuenta destino:
                     try {
-                        Cuenta toAcct = service.getAccountById(t.getCuentaDestinatario());
+                        Cuenta toAcct = service.getCuentaById(t.getCuentaDestinatario());
                         sb.append(" → ").append(toAcct.getNumero());
                     } catch (SQLException e) {
                         sb.append(" → [Cuenta #" + t.getCuentaDestinatario() + "]");
@@ -260,7 +259,7 @@ public class ATMUI extends JFrame {
         if (s != null) {
             try {
                 BigDecimal amt = new BigDecimal(s);
-                service.refillCash(amt);
+                service.agregarSaldo(amt);
                 outputArea.setText("Cajero repuesto con: " + amt);
             } catch (Exception ex) {
                 outputArea.setText("Error: " + ex.getMessage());

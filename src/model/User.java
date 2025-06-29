@@ -4,13 +4,13 @@ public class User {
     private int id;
     private String username;
     private String passwordHash;
-    private TipoUsuario userType;
+    private TipoUsuario tipoUsuario;
 
     public User(int id, String username, String passwordHash, TipoUsuario userType) {
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
-        this.userType = userType;
+        this.tipoUsuario = userType;
     }
 
     public int getId() {
@@ -37,11 +37,11 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public TipoUsuario getUserType() {
-        return userType;
+    public TipoUsuario getTipoUsuario() {
+        return tipoUsuario;
     }
 
-    public void setUserType(TipoUsuario userType) {
-        this.userType = userType;
+    public void setTipoUsuario(TipoUsuario tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
     }
 }

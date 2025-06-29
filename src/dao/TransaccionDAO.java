@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TransaccionDAO {
     /** Registra una nueva transacción */
-    void add(Transaccion transaccionx) throws SQLException;
+    void registrar(Transaccion transaccion) throws SQLException;
 
     /** Todas las transacciones de una cuenta */
     List<Transaccion> findByAccountId(int accountId) throws SQLException;
