@@ -15,11 +15,11 @@ public class CuentaDAOImpl implements CuentaDAO {
     }
 
     @Override
-    public Cuenta findByUserId(int userId) throws SQLException {
+    public Cuenta findByUserId(int idUsuario) throws SQLException {
         String sql = "SELECT * FROM accounts WHERE user_id = ?";
 
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-            ps.setInt(1, userId);
+            ps.setInt(1, idUsuario);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next())
                     return map(rs);
@@ -29,11 +29,11 @@ public class CuentaDAOImpl implements CuentaDAO {
     }
 
     @Override
-    public Cuenta findByAccountNumber(String accountNumber) throws SQLException {
+    public Cuenta findByAccountNumber(String numeroCuenta) throws SQLException {
         String sql = "SELECT * FROM accounts WHERE account_number = ?";
 
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-            ps.setString(1, accountNumber);
+            ps.setString(1, numeroCuenta);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next())
                     return map(rs);
