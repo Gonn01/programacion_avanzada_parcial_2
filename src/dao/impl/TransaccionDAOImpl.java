@@ -34,8 +34,8 @@ public class TransaccionDAOImpl implements TransaccionDAO {
                     transaccion.getFecha() != null
                             ? transaccion.getFecha()
                             : LocalDateTime.now()));
-            if (transaccion.getCuentaDestinatario() != null) {
-                ps.setInt(5, transaccion.getCuentaDestinatario());
+            if (transaccion.getIdCuentaDestinatario() != null) {
+                ps.setInt(5, transaccion.getIdCuentaDestinatario());
             } else {
                 ps.setNull(5, Types.INTEGER);
             }
@@ -44,11 +44,11 @@ public class TransaccionDAOImpl implements TransaccionDAO {
     }
 
     @Override
-    public List<Transaccion> findByAccountId(int accountId) throws SQLException {
+    public List<Transaccion> findByAccountId(int idCuenta) throws SQLException {
         String sql = "SELECT * FROM transactions WHERE account_id = ?";
         List<Transaccion> list = new ArrayList<>();
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-            ps.setInt(1, accountId);
+            ps.setInt(1, idCuenta);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(map(rs));
@@ -74,7 +74,7 @@ public class TransaccionDAOImpl implements TransaccionDAO {
     private Transaccion map(ResultSet data) throws SQLException {
         int id = data.getInt("id");
 
-        int accountId = data.getInt("account_id");
+        int idCuenta = data.getInt("account_id");
 
         TipoTransaccion tipo = TipoTransaccion.valueOf(data.getString("type"));
 
@@ -82,9 +82,9 @@ public class TransaccionDAOImpl implements TransaccionDAO {
 
         LocalDateTime fecha = data.getTimestamp("timestamp").toLocalDateTime();
 
-        Integer cuentaDestinatario = data.getObject("target_account_id", Integer.class);
+        Integer idCuentaDestinatario = data.getObject("target_account_id", Integer.class);
 
-        Transaccion transaccion = new Transaccion(id, accountId, tipo, cantidad, fecha, cuentaDestinatario);
+        Transaccion transaccion = new Transaccion(id, idCuenta, tipo, cantidad, fecha, idCuentaDestinatario);
 
         return transaccion;
     }

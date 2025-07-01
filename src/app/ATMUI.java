@@ -3,7 +3,7 @@ package app;
 import model.Cuenta;
 import model.Transaccion;
 import model.TipoTransaccion;
-import model.User;
+import model.Usuario;
 import model.TipoUsuario;
 import service.ATMService;
 import util.HashUtil;
@@ -20,7 +20,7 @@ public class ATMUI extends JFrame {
     private JPanel mainPanel = new JPanel(cardLayout);
 
     private ATMService service;
-    private User usuarioLogeado;
+    private Usuario usuarioLogeado;
 
     // --- Login panel ---
     private JTextField userField = new JTextField(15);
@@ -237,12 +237,12 @@ public class ATMUI extends JFrame {
                         .append(t.getTipo())
                         .append(" | ")
                         .append(t.getCantidad());
-                if (t.getTipo() == TipoTransaccion.TRANSFERENCIA && t.getCuentaDestinatario() != null) {
+                if (t.getTipo() == TipoTransaccion.TRANSFERENCIA && t.getIdCuentaDestinatario() != null) {
                     try {
-                        Cuenta toAcct = service.getCuentaById(t.getCuentaDestinatario());
+                        Cuenta toAcct = service.getCuentaById(t.getIdCuentaDestinatario());
                         sb.append(" → ").append(toAcct.getNumero());
                     } catch (SQLException e) {
-                        sb.append(" → [Cuenta #" + t.getCuentaDestinatario() + "]");
+                        sb.append(" → [Cuenta #" + t.getIdCuentaDestinatario() + "]");
                     }
                 }
                 sb.append("\n");

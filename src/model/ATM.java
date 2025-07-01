@@ -6,9 +6,9 @@ public class ATM {
     private int id;
     private BigDecimal saldo;
 
-    public ATM(int id, BigDecimal totalCash) {
+    public ATM(int id, BigDecimal saldo) {
         this.id = id;
-        this.saldo = totalCash;
+        this.saldo = saldo;
     }
 
     public int getId() {
@@ -23,7 +23,7 @@ public class ATM {
         return saldo;
     }
 
-    public void setSaldo(BigDecimal totalCash) {
-        this.saldo = totalCash;
+    public void setSaldo(BigDecimal saldo) {
+        this.saldo = saldo;
     }
 }

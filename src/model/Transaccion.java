@@ -9,7 +9,7 @@ public class Transaccion {
     private TipoTransaccion tipo;
     private BigDecimal cantidad;
     private LocalDateTime fecha;
-    private Integer cuentaDestinatario;
+    private Integer idCuentaDestinatario;
 
     public Transaccion(
             int id,
@@ -17,13 +17,13 @@ public class Transaccion {
             TipoTransaccion tipo,
             BigDecimal cantidad,
             LocalDateTime fecha,
-            Integer cuentaDestinatario) {
+            Integer idCuentaDestinatario) {
         this.id = id;
         this.numeroCuenta = numeroCuenta;
         this.tipo = tipo;
         this.cantidad = cantidad;
         this.fecha = fecha;
-        this.cuentaDestinatario = cuentaDestinatario;
+        this.idCuentaDestinatario = idCuentaDestinatario;
     }
 
     public int getId() {
@@ -38,16 +38,16 @@ public class Transaccion {
         return numeroCuenta;
     }
 
-    public void setNumeroCuenta(int accountId) {
-        this.numeroCuenta = accountId;
+    public void setNumeroCuenta(int numeroCuenta) {
+        this.numeroCuenta = numeroCuenta;
     }
 
     public TipoTransaccion getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoTransaccion type) {
-        this.tipo = type;
+    public void setTipo(TipoTransaccion tipo) {
+        this.tipo = tipo;
     }
 
     public BigDecimal getCantidad() {
@@ -62,15 +62,15 @@ public class Transaccion {
         return fecha;
     }
 
-    public void setFecha(LocalDateTime timestamp) {
-        this.fecha = timestamp;
+    public void setFecha(LocalDateTime fecha) {
+        this.fecha = fecha;
     }
 
-    public Integer getCuentaDestinatario() {
-        return cuentaDestinatario;
+    public Integer getIdCuentaDestinatario() {
+        return idCuentaDestinatario;
     }
 
-    public void setCuentaDestinatario(Integer targetAccountId) {
-        this.cuentaDestinatario = targetAccountId;
+    public void setIdCuentaDestinatario(Integer idCuentaDestinatario) {
+        this.idCuentaDestinatario = idCuentaDestinatario;
     }
 }

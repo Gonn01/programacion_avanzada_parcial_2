@@ -1,16 +1,16 @@
 package model;
 
-public class User {
+public class Usuario {
     private int id;
     private String username;
     private String passwordHash;
     private TipoUsuario tipoUsuario;
 
-    public User(int id, String username, String passwordHash, TipoUsuario userType) {
+    public Usuario(int id, String username, String passwordHash, TipoUsuario tipoUsuario) {
         this.id = id;
         this.username = username;
         this.passwordHash = passwordHash;
-        this.tipoUsuario = userType;
+        this.tipoUsuario = tipoUsuario;
     }
 
     public int getId() {

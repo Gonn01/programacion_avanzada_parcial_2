@@ -12,7 +12,7 @@ import model.Cuenta;
 import model.ATM;
 import model.Transaccion;
 import model.TipoTransaccion;
-import model.User;
+import model.Usuario;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -32,7 +32,7 @@ public class ATMService {
         this.ATMDAO = new ATMDAOImpl();
     }
 
-    public User login(String username, String passwordHash) throws SQLException {
+    public Usuario login(String username, String passwordHash) throws SQLException {
         return usuarioDAO.findByUsernameAndPassword(username, passwordHash);
     }
 
@@ -50,8 +50,8 @@ public class ATMService {
         return transaccionDAO.findAll();
     }
 
-    public Cuenta getCuentaById(int accountId) throws SQLException {
-        return cuentaDAO.findById(accountId);
+    public Cuenta getCuentaById(int idCuenta) throws SQLException {
+        return cuentaDAO.findById(idCuenta);
     }
 
     public void depositar(int idUsuario, BigDecimal monto) throws SQLException {

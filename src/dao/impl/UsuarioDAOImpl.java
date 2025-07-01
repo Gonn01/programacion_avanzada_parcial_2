@@ -1,7 +1,7 @@
 package dao.impl;
 
 import dao.UsuarioDAO;
-import model.User;
+import model.Usuario;
 import model.TipoUsuario;
 import util.ConexionDB;
 
@@ -15,7 +15,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     }
 
     @Override
-    public User findByUsernameAndPassword(String username, String passwordHash) throws SQLException {
+    public Usuario findByUsernameAndPassword(String username, String passwordHash) throws SQLException {
         String sql = "SELECT * FROM users WHERE username=? AND password_hash=?";
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setString(1, username);
@@ -28,7 +28,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         }
     }
 
-    private User map(ResultSet data) throws SQLException {
+    private Usuario map(ResultSet data) throws SQLException {
         int id = data.getInt("id");
 
         String username = data.getString("username");
@@ -37,6 +37,6 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
         TipoUsuario tipoUsuario = TipoUsuario.valueOf(data.getString("user_type"));
 
-        return new User(id, username, passwordHash, tipoUsuario);
+        return new Usuario(id, username, passwordHash, tipoUsuario);
     }
 }

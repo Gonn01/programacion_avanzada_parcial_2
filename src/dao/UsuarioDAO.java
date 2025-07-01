@@ -1,8 +1,8 @@
 package dao;
 
-import model.User;
+import model.Usuario;
 import java.sql.SQLException;
 
 public interface UsuarioDAO {
-    User findByUsernameAndPassword(String username, String passwordHash) throws SQLException;
+    Usuario findByUsernameAndPassword(String username, String passwordHash) throws SQLException;
 }

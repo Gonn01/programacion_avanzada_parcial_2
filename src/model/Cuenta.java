@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 
 public class Cuenta {
     private int id;
-    private int usuarioId;
+    private int idUsuario;
     private String numero;
     private BigDecimal saldo;
 
-    public Cuenta(int id, int usuarioId, String numero, BigDecimal saldo) {
+    public Cuenta(int id, int idUsuario, String numero, BigDecimal saldo) {
         this.id = id;
-        this.usuarioId = usuarioId;
+        this.idUsuario = idUsuario;
         this.numero = numero;
         this.saldo = saldo;
     }
@@ -23,20 +23,20 @@ public class Cuenta {
         this.id = id;
     }
 
-    public int getUsuarioId() {
-        return usuarioId;
+    public int getidUsuario() {
+        return idUsuario;
     }
 
-    public void setUsuarioId(int userId) {
-        this.usuarioId = userId;
+    public void setidUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public String getNumero() {
         return numero;
     }
 
-    public void setNumero(String accountNumber) {
-        this.numero = accountNumber;
+    public void setNumero(String numero) {
+        this.numero = numero;
     }
 
     public BigDecimal getSaldo() {
