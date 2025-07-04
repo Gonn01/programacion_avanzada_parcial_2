@@ -120,7 +120,7 @@ public class ATMUI extends JFrame {
                 textoError.setText("Credenciales inválidas");
             } else {
                 textoError.setText("");
-                setupDashboardFor(usuarioLogeado.getTipoUsuario());
+                mostrarDashboard(usuarioLogeado.getTipoUsuario());
                 cardLayout.show(mainPanel, "dashboard");
             }
         } catch (SQLException ex) {
@@ -129,7 +129,7 @@ public class ATMUI extends JFrame {
         }
     }
 
-    private void setupDashboardFor(TipoUsuario type) {
+    private void mostrarDashboard(TipoUsuario type) {
         textoBienvenida.setText("Bienvenido, " + usuarioLogeado.getUsername());
         boolean isEmp = type == TipoUsuario.EMPLEADO;
         botonVerSaldo.setVisible(!isEmp);
