@@ -20,8 +20,6 @@ public class ConexionDB {
         this.conexion = DriverManager.getConnection(URLDB, USUARIODB, PASSWORDDB);
     }
 
-    /// synchronized es para evitar problemas de concurrencia en aplicaciones
-    /// multihilo
     public static synchronized ConexionDB getInstancia() throws SQLException {
         if (instancia == null || instancia.getConexion().isClosed()) {
             instancia = new ConexionDB();

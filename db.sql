@@ -27,7 +27,7 @@ CREATE TABLE users
     password_hash  VARCHAR
     (64) NOT NULL,
     user_type      ENUM
-    ('EMPLOYEE','CUSTOMER') NOT NULL
+    ('EMPLEADO','CLIENTE') NOT NULL
 );
 
     -- 5) Crear tabla de cuentas
@@ -52,7 +52,7 @@ CREATE TABLE users
             AUTO_INCREMENT PRIMARY KEY,
     account_id        INT NOT NULL,
     type              ENUM
-            ('DEPOSIT','WITHDRAWAL','TRANSFER') NOT NULL,
+            ('DEPOSITO','RETIRO','TRANSFERENCIA') NOT NULL,
     amount            DECIMAL
             (15,2) NOT NULL,
     timestamp         DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -78,10 +78,10 @@ CREATE TABLE users
             INSERT INTO users
                 (id, username, password_hash, user_type)
             VALUES
-                (1, 'test', SHA2('1234',256), 'CUSTOMER'),
-                (2, 'jose', SHA2('abc',256), 'CUSTOMER'),
-                (3, 'maria', SHA2('pwd',256), 'CUSTOMER'),
-                (4, 'admin', SHA2('1234',256), 'EMPLOYEE');
+                (1, 'guest', SHA2('1234',256), 'CLIENTE'),
+                (2, 'guest1', SHA2('abc',256), 'CLIENTE'),
+                (3, 'guest2', SHA2('pwd',256), 'CLIENTE'),
+                (4, 'admin', SHA2('1234',256), 'EMPLEADO');
 
             -- 8.2) Cuentas: id, user_id, número de cuenta, balance inicial
             INSERT INTO accounts
@@ -95,10 +95,10 @@ CREATE TABLE users
             INSERT INTO transactions
                 (account_id, type, amount, timestamp, target_account_id)
             VALUES
-                (1, 'DEPOSIT', 200.00, '2025-06-27 10:15:00', NULL),
-                (1, 'WITHDRAWAL', 150.00, '2025-06-27 12:30:00', NULL),
-                (2, 'TRANSFER', 50.00, '2025-06-27 14:45:00', 1),
-                (3, 'DEPOSIT', 75.00, '2025-06-27 16:00:00', NULL);
+                (1, 'DEPOSITO', 200.00, '2025-06-27 10:15:00', NULL),
+                (1, 'RETIRO', 150.00, '2025-06-27 12:30:00', NULL),
+                (2, 'TRANSFERENCIA', 50.00, '2025-06-27 14:45:00', 1),
+                (3, 'DEPOSITO', 75.00, '2025-06-27 16:00:00', NULL);
 
             -- 8.4) Inventario inicial de efectivo del cajero
             INSERT INTO atm_cash
