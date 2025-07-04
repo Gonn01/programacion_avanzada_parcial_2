@@ -22,23 +22,20 @@ public class ATMUI extends JFrame {
     private ATMService service;
     private Usuario usuarioLogeado;
 
-    // --- Login panel ---
-    private JTextField userField = new JTextField(15);
-    private JPasswordField passField = new JPasswordField(15);
-    private JLabel errorLabel = new JLabel();
+    private JTextField textfieldUsuario = new JTextField(15);
+    private JPasswordField textfieldPassword = new JPasswordField(15);
+    private JLabel textoError = new JLabel();
 
-    // --- Dashboard panel ---
-    private JLabel welcomeLabel = new JLabel();
+    private JLabel textoBienvenida = new JLabel();
     private JTextArea outputArea = new JTextArea(10, 30);
 
-    // Botones comunes
-    private JButton btnBalance = new JButton("Ver Saldo");
-    private JButton btnDeposit = new JButton("Depositar");
-    private JButton btnWithdraw = new JButton("Retirar");
-    private JButton btnTransfer = new JButton("Transferir");
-    private JButton btnViewTx = new JButton("Ver Transacciones");
-    private JButton btnRefillCash = new JButton("Reponer Efectivo");
-    private JButton btnLogout = new JButton("Logout");
+    private JButton botonVerSaldo = new JButton("Ver Saldo");
+    private JButton botonDepositar = new JButton("Depositar");
+    private JButton botonRetirar = new JButton("Retirar");
+    private JButton botonTransferir = new JButton("Transferir");
+    private JButton botonVerTransacciones = new JButton("Ver Transacciones");
+    private JButton botonReponerEfectivo = new JButton("Reponer Efectivo");
+    private JButton botonCerrarSesion = new JButton("Logout");
 
     public ATMUI() throws SQLException {
         super("Cajero Automático");
@@ -47,70 +44,63 @@ public class ATMUI extends JFrame {
     }
 
     private void initUI() {
-        // Login Panel
-        JPanel loginPanel = new JPanel(new GridBagLayout());
+        JPanel vistaLogin = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5);
 
         c.gridx = 0;
         c.gridy = 0;
-        loginPanel.add(new JLabel("Usuario:"), c);
+        vistaLogin.add(new JLabel("Usuario:"), c);
         c.gridx = 1;
-        loginPanel.add(userField, c);
+        vistaLogin.add(textfieldUsuario, c);
 
         c.gridx = 0;
         c.gridy = 1;
-        loginPanel.add(new JLabel("Clave:"), c);
+        vistaLogin.add(new JLabel("Clave:"), c);
         c.gridx = 1;
-        loginPanel.add(passField, c);
+        vistaLogin.add(textfieldPassword, c);
 
-        JButton btnLogin = new JButton("Ingresar");
+        JButton botonIngresar = new JButton("Ingresar");
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 2;
-        loginPanel.add(btnLogin, c);
+        vistaLogin.add(botonIngresar, c);
 
-        errorLabel.setForeground(Color.RED);
+        textoError.setForeground(Color.RED);
         c.gridy = 3;
-        loginPanel.add(errorLabel, c);
+        vistaLogin.add(textoError, c);
 
-        btnLogin.addActionListener(e -> handleLogin());
+        botonIngresar.addActionListener(e -> handleLogin());
 
-        // Dashboard Panel
-        JPanel dashPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel vistaDashboard = new JPanel(new BorderLayout(10, 10));
 
-        // Top: bienvenida + logout
-        JPanel top = new JPanel(new BorderLayout());
-        top.add(welcomeLabel, BorderLayout.WEST);
-        top.add(btnLogout, BorderLayout.EAST);
-        dashPanel.add(top, BorderLayout.NORTH);
+        JPanel nav = new JPanel(new BorderLayout());
+        nav.add(textoBienvenida, BorderLayout.WEST);
+        nav.add(botonCerrarSesion, BorderLayout.EAST);
+        vistaDashboard.add(nav, BorderLayout.NORTH);
 
-        // Center: output
         outputArea.setEditable(false);
-        dashPanel.add(new JScrollPane(outputArea), BorderLayout.CENTER);
+        vistaDashboard.add(new JScrollPane(outputArea), BorderLayout.CENTER);
 
-        // Bottom: operaciones
-        JPanel ops = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        ops.add(btnBalance);
-        ops.add(btnDeposit);
-        ops.add(btnWithdraw);
-        ops.add(btnTransfer);
-        ops.add(btnViewTx);
-        ops.add(btnRefillCash);
-        dashPanel.add(ops, BorderLayout.SOUTH);
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        bottom.add(botonVerSaldo);
+        bottom.add(botonDepositar);
+        bottom.add(botonRetirar);
+        bottom.add(botonTransferir);
+        bottom.add(botonVerTransacciones);
+        bottom.add(botonReponerEfectivo);
+        vistaDashboard.add(bottom, BorderLayout.SOUTH);
 
-        // Listeners de botones
-        btnLogout.addActionListener(e -> logout());
-        btnBalance.addActionListener(e -> doBalance());
-        btnDeposit.addActionListener(e -> doDeposit());
-        btnWithdraw.addActionListener(e -> doWithdraw());
-        btnTransfer.addActionListener(e -> doTransfer());
-        btnViewTx.addActionListener(e -> doViewTransactions());
-        btnRefillCash.addActionListener(e -> doRefillCash());
+        botonCerrarSesion.addActionListener(e -> cerrarSesion());
+        botonVerSaldo.addActionListener(e -> verSaldo());
+        botonDepositar.addActionListener(e -> hacerDeposito());
+        botonRetirar.addActionListener(e -> hacerRetiro());
+        botonTransferir.addActionListener(e -> hacerTransaccion());
+        botonVerTransacciones.addActionListener(e -> verTransacciones());
+        botonReponerEfectivo.addActionListener(e -> reponerSaldo());
 
-        // Añadir panels al mainPanel
-        mainPanel.add(loginPanel, "login");
-        mainPanel.add(dashPanel, "dashboard");
+        mainPanel.add(vistaLogin, "login");
+        mainPanel.add(vistaDashboard, "dashboard");
         add(mainPanel);
 
         cardLayout.show(mainPanel, "login");
@@ -121,128 +111,127 @@ public class ATMUI extends JFrame {
     }
 
     private void handleLogin() {
-        String user = userField.getText().trim();
-        String pass = new String(passField.getPassword());
+        String usuarioValue = textfieldUsuario.getText().trim();
+        String passwordValue = new String(textfieldPassword.getPassword());
         try {
-            // Hash de la contraseña
-            String hash = HashUtil.sha256(pass);
-            usuarioLogeado = service.login(user, hash);
+            String hash = HashUtil.sha256(passwordValue);
+            usuarioLogeado = service.login(usuarioValue, hash);
             if (usuarioLogeado == null) {
-                errorLabel.setText("Credenciales inválidas");
+                textoError.setText("Credenciales inválidas");
             } else {
-                errorLabel.setText("");
+                textoError.setText("");
                 setupDashboardFor(usuarioLogeado.getTipoUsuario());
                 cardLayout.show(mainPanel, "dashboard");
             }
         } catch (SQLException ex) {
-            errorLabel.setText("Error de conexión");
+            textoError.setText("Error de conexión");
             ex.printStackTrace();
         }
     }
 
     private void setupDashboardFor(TipoUsuario type) {
-        welcomeLabel.setText("Bienvenido, " + usuarioLogeado.getUsername());
+        textoBienvenida.setText("Bienvenido, " + usuarioLogeado.getUsername());
         boolean isEmp = type == TipoUsuario.EMPLEADO;
-        btnBalance.setVisible(!isEmp);
-        btnDeposit.setVisible(!isEmp);
-        btnWithdraw.setVisible(!isEmp);
-        btnTransfer.setVisible(!isEmp);
-        btnRefillCash.setVisible(isEmp);
-        // btnViewTx siempre visible (cliente ve sus TX, empleado las todas)
+        botonVerSaldo.setVisible(!isEmp);
+        botonDepositar.setVisible(!isEmp);
+        botonRetirar.setVisible(!isEmp);
+        botonTransferir.setVisible(!isEmp);
+        botonReponerEfectivo.setVisible(isEmp);
         outputArea.setText("");
     }
 
-    private void logout() {
-        userField.setText("");
-        passField.setText("");
+    private void cerrarSesion() {
+        textfieldUsuario.setText("");
+        textfieldPassword.setText("");
         outputArea.setText("");
-        errorLabel.setText("");
+        textoError.setText("");
         cardLayout.show(mainPanel, "login");
     }
 
-    private void doBalance() {
+    private void verSaldo() {
         try {
-            BigDecimal bal = service.getSaldo(usuarioLogeado.getId());
-            outputArea.setText("Saldo actual: " + bal);
+            BigDecimal saldo = service.getSaldo(usuarioLogeado.getId());
+            outputArea.setText("Saldo actual: " + saldo);
         } catch (SQLException e) {
             outputArea.setText("Error: " + e.getMessage());
         }
     }
 
-    private void doDeposit() {
-        String s = JOptionPane.showInputDialog(this, "Monto a depositar:");
-        if (s != null) {
+    private void hacerDeposito() {
+        String montoString = JOptionPane.showInputDialog(this, "Monto a depositar:");
+        if (montoString != null) {
             try {
-                BigDecimal amt = new BigDecimal(s);
-                service.depositar(usuarioLogeado.getId(), amt);
-                outputArea.setText("Depositado: " + amt);
+                BigDecimal monto = new BigDecimal(montoString);
+                service.depositar(usuarioLogeado.getId(), monto);
+                outputArea.setText("Depositado: " + monto);
             } catch (Exception ex) {
                 outputArea.setText("Error: " + ex.getMessage());
             }
         }
     }
 
-    private void doWithdraw() {
-        String s = JOptionPane.showInputDialog(this, "Monto a retirar:");
-        if (s != null) {
+    private void hacerRetiro() {
+        String montoString = JOptionPane.showInputDialog(this, "Monto a retirar:");
+        if (montoString != null) {
             try {
-                BigDecimal amt = new BigDecimal(s);
-                service.retiro(usuarioLogeado.getId(), amt);
-                outputArea.setText("Retirado: " + amt);
+                BigDecimal monto = new BigDecimal(montoString);
+                service.retiro(usuarioLogeado.getId(), monto);
+                outputArea.setText("Retirado: " + monto);
             } catch (Exception ex) {
                 outputArea.setText("Error: " + ex.getMessage());
             }
         }
     }
 
-    private void doTransfer() {
+    private void hacerTransaccion() {
         JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
-        JTextField accField = new JTextField();
-        JTextField amtField = new JTextField();
+        JTextField textfieldCuenta = new JTextField();
+        JTextField textfieldMonto = new JTextField();
         panel.add(new JLabel("Cuenta destino:"));
-        panel.add(accField);
+        panel.add(textfieldCuenta);
         panel.add(new JLabel("Monto:"));
-        panel.add(amtField);
-        int ok = JOptionPane.showConfirmDialog(this, panel, "Transferir", JOptionPane.OK_CANCEL_OPTION);
-        if (ok == JOptionPane.OK_OPTION) {
+        panel.add(textfieldMonto);
+        int confirmado = JOptionPane.showConfirmDialog(this, panel, "Transferir", JOptionPane.OK_CANCEL_OPTION);
+        if (confirmado == JOptionPane.OK_OPTION) {
             try {
-                String toAcct = accField.getText().trim();
-                BigDecimal amt = new BigDecimal(amtField.getText().trim());
-                service.transfer(usuarioLogeado.getId(), toAcct, amt);
-                outputArea.setText("Transferido: " + amt + " a cuenta " + toAcct);
-            } catch (Exception ex) {
-                outputArea.setText("Error: " + ex.getMessage());
+                String cuentaDestinatario = textfieldCuenta.getText().trim();
+                BigDecimal monto = new BigDecimal(textfieldMonto.getText().trim());
+                service.transfer(usuarioLogeado.getId(), cuentaDestinatario, monto);
+                outputArea.setText("Transferido: " + monto + " a cuenta " + cuentaDestinatario);
+            } catch (Exception exception) {
+                outputArea.setText("Error: " + exception.getMessage());
             }
         }
     }
 
-    private void doViewTransactions() {
+    private void verTransacciones() {
         try {
-            List<Transaccion> txs;
+            List<Transaccion> transacciones;
             if (usuarioLogeado.getTipoUsuario() == TipoUsuario.EMPLEADO) {
-                txs = service.getAllTransacciones();
+                transacciones = service.getAllTransacciones();
             } else {
-                txs = service.getTransaccionesUsuario(usuarioLogeado.getId());
+                transacciones = service.getTransaccionesUsuario(usuarioLogeado.getId());
             }
 
-            if (txs.isEmpty()) {
+            if (transacciones.isEmpty()) {
                 outputArea.setText("Sin transacciones");
                 return;
             }
 
             StringBuilder sb = new StringBuilder();
-            for (Transaccion t : txs) {
-                sb.append(t.getFecha())
+            for (Transaccion transaccion : transacciones) {
+                sb.append(transaccion.getFecha())
                         .append(" | ")
-                        .append(t.getTipo())
+                        .append(transaccion.getTipo())
                         .append(" | ")
-                        .append(t.getCantidad());
-                if (t.getTipo() == TipoTransaccion.TRANSFERENCIA && t.getIdCuentaDestinatario() != null) {
+                        .append(transaccion.getCantidad());
+                if (transaccion.getTipo() == TipoTransaccion.TRANSFERENCIA
+                        && transaccion.getIdCuentaDestinatario() != null) {
                     try {
-                        Cuenta toAcct = service.getCuentaById(t.getIdCuentaDestinatario());
+                        Cuenta toAcct = service.getCuentaById(transaccion.getIdCuentaDestinatario());
                         sb.append(" → ").append(toAcct.getNumero());
                     } catch (SQLException e) {
-                        sb.append(" → [Cuenta #" + t.getIdCuentaDestinatario() + "]");
+                        sb.append(" → [Cuenta #" + transaccion.getIdCuentaDestinatario() + "]");
                     }
                 }
                 sb.append("\n");
@@ -254,15 +243,15 @@ public class ATMUI extends JFrame {
         }
     }
 
-    private void doRefillCash() {
-        String s = JOptionPane.showInputDialog(this, "Monto a reponer en el cajero:");
-        if (s != null) {
+    private void reponerSaldo() {
+        String montoString = JOptionPane.showInputDialog(this, "Monto a reponer en el cajero:");
+        if (montoString != null) {
             try {
-                BigDecimal amt = new BigDecimal(s);
-                service.agregarSaldo(amt);
-                outputArea.setText("Cajero repuesto con: " + amt);
-            } catch (Exception ex) {
-                outputArea.setText("Error: " + ex.getMessage());
+                BigDecimal monto = new BigDecimal(montoString);
+                service.agregarSaldo(monto);
+                outputArea.setText("Cajero repuesto con: " + monto);
+            } catch (Exception exception) {
+                outputArea.setText("Error: " + exception.getMessage());
             }
         }
     }
@@ -271,13 +260,13 @@ public class ATMUI extends JFrame {
         SwingUtilities.invokeLater(() -> {
             try {
                 new ATMUI().setVisible(true);
-            } catch (SQLException e) {
+            } catch (SQLException exception) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "No se pudo conectar con la base de datos:\n" + e.getMessage(),
+                        "No se pudo conectar con la base de datos:\n" + exception.getMessage(),
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
+                exception.printStackTrace();
             }
         });
     }
